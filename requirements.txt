@@ -3,3 +3,8 @@ mcp
 httpx
 streamlit
 flask
+openai
+ollama
+numpy
+sentence-transformers
+faiss-cpu
