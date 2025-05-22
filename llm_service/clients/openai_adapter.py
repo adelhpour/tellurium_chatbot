@@ -36,12 +36,13 @@ class OpenAIAdapter:
             if not api_key:
                 warning_msg = "OPENAI_API_KEY not found in environment."
                 logger.warning(warning_msg)
-                print(f"Warning: {warning_msg}")
+                print(f"Error: {warning_msg}")
                 print("You can either:")
                 print("  • Add it to your .env file, e.g.:")
                 print("      OPENAI_API_KEY='your-api-key'")
                 print("  • Or export it in your shell, e.g.:")
                 print("      export OPENAI_API_KEY='your-api-key'")
+                raise RuntimeError("Cannot initialize OpenAIAdapter without OPENAI_API_KEY")
 
             self.client = AsyncOpenAI(api_key=api_key)
             self.model_name = model_name
