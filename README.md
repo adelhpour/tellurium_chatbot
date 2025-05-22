@@ -1,6 +1,6 @@
-# ChatTell: Systems Biology Chatbot
+# Tellurium Chatbot
 
-ChatTell is a conversational assistant that integrates a large language model with the Tellurium systems biology toolkit, allowing you to run simulations, query models, and visualize results directly from a chat interface.
+Tellurium Chatbot is a conversational assistant that integrates a large language model with the Tellurium framework, allowing you to run simulations directly from a chat interface.
 
 ## Installation
 
