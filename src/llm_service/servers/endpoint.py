@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from importlib import import_module
 from typing import Dict
+import os
 
 app = Flask(__name__)
 
@@ -79,6 +80,7 @@ def simulate():
 
 
 if __name__ == "__main__":
-    # • debug=True ⇢ auto-reload on code change
-    # • host="0.0.0.0" ⇢ bind all interfaces (LAN) instead of only 127.0.0.1
-    app.run(port=5000, debug=True)
+    app.run(
+        host="127.0.0.1",
+        port=5000,
+        debug=False)

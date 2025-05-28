@@ -20,15 +20,13 @@ class MCPClient:
     Client for interacting with MCP (Model Control Protocol) server
     """
 
-    def __init__(self, server_script: str, model_name: str):
+    def __init__(self, model_name: str):
         """
         Initialize MCP client
 
         Args:
-            server_script: Path to MCP server script
             model_name: Model to use for queries
         """
-        self.server_script = server_script
         self.model_name = model_name
         self.session: Optional[ClientSession] = None
         self.exit_stack = AsyncExitStack()
@@ -63,20 +61,15 @@ class MCPClient:
             self for method chaining
         """
         try:
-            server_script_path = self.server_script
-            is_python = server_script_path.endswith('.py')
-            is_js = server_script_path.endswith('.js')
-            if not (is_python or is_js):
-                raise ValueError("Server script must be a .py or .js file")
-
-            command = "python" if is_python else "node"
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            server_script_path = os.path.join(current_dir, "../servers/mcp_server.py")
             server_params = StdioServerParameters(
-                command=command,
+                command="python",
                 args=[server_script_path],
                 env=None
             )
 
-            logger.info(f"Connecting to MCP server: {server_script_path}")
+            # logger.info(f"Connecting to MCP server: {server_script_path}")
             stdio_transport = await self.exit_stack.enter_async_context(
                 stdio_client(server_params)
             )
@@ -245,14 +238,14 @@ class MCPClient:
 
         self.model_name = model_name
         self.using_openai = new_is_openai
-        logger.info(f"Model changed to: {model_name} (API: {'OpenAI' if self.using_openai else 'Ollama'})")
+        # logger.info(f"Model changed to: {model_name} (API: {'OpenAI' if self.using_openai else 'Ollama'})")
         return f"Model changed to: {model_name} (API: {'OpenAI' if self.using_openai else 'Ollama'})"
 
     async def cleanup(self):
         """
         Close all connections and clean up resources
         """
-        logger.info("Cleaning up resources")
+        # logger.info("Cleaning up resources")
         await self.exit_stack.aclose()
 
     async def ask_async(self, query: str) -> str:

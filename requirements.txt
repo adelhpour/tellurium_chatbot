@@ -8,3 +8,5 @@ ollama
 numpy
 sentence-transformers
 faiss-cpu
+flask-cors
+requests

@@ -8,8 +8,9 @@ import threading
 
 class ServerManager:
     def __init__(self):
-        self._endpoint_script = "llm_service/servers/endpoint.py"
-        self._mcp_script      = "llm_service/servers/mcp_server.py"
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        self._endpoint_script = os.path.join(current_dir, "endpoint.py")
+        self._mcp_script = os.path.join(current_dir, "mcp_server.py")
         self.endpoint_proc = None
         self.mcp_proc      = None
 

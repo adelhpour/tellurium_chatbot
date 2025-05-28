@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from llm_service import llm_service
+from src.llm_service import llm_service
 
 def run_cli():
     """

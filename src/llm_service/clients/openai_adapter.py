@@ -39,9 +39,9 @@ class OpenAIAdapter:
                 print(f"Error: {warning_msg}")
                 print("You can either:")
                 print("  • Add it to your .env file, e.g.:")
-                print("      OPENAI_API_KEY='your-api-key'")
+                print("      OPENAI_API_KEY='your-backend-key'")
                 print("  • Or export it in your shell, e.g.:")
-                print("      export OPENAI_API_KEY='your-api-key'")
+                print("      export OPENAI_API_KEY='your-backend-key'")
                 raise RuntimeError("Cannot initialize OpenAIAdapter without OPENAI_API_KEY")
 
             self.client = AsyncOpenAI(api_key=api_key)
@@ -101,7 +101,7 @@ class OpenAIAdapter:
         # Store in memory
         self.memories.append((user_msg, assistant_response))
 
-        logger.debug(f"Stored interaction in memory (total: {len(self.memories)})")
+        # logger.debug(f"Stored interaction in memory (total: {len(self.memories)})")
 
     def _retrieve_relevant_memories(self, query: str) -> List[Dict[str, str]]:
         """
@@ -127,7 +127,7 @@ class OpenAIAdapter:
             messages.append({"role": "user", "content": user_msg})
             messages.append({"role": "assistant", "content": assistant_msg})
 
-        logger.info(f"Retrieved {len(messages) // 2} relevant past interactions")
+        # logger.info(f"Retrieved {len(messages) // 2} relevant past interactions")
         return messages
 
     def _convert_tools_to_openai_format(self, tools: List) -> List[Dict[str, Any]]:
@@ -178,13 +178,13 @@ class OpenAIAdapter:
         # Augment the messages with retrieved context
         # We'll inject the retrieved messages at the beginning, preserving the recent conversation flow
         augmented_messages = retrieved_messages + messages
-        logger.info(f"Augmented messages with {len(retrieved_messages)} retrieved messages")
+        # logger.info(f"Augmented messages with {len(retrieved_messages)} retrieved messages")
 
         # Format tools for OpenAI
         openai_tools = self._convert_tools_to_openai_format(tools)
 
         # First chat invocation with augmented context
-        logger.info(f"Sending augmented query to OpenAI model: {self.model_name}")
+        # logger.info(f"Sending augmented query to OpenAI model: {self.model_name}")
         response = await self.client.chat.completions.create(
             model=self.model_name,
             messages=augmented_messages,
@@ -214,7 +214,7 @@ class OpenAIAdapter:
         for call in tool_calls:
             try:
                 fname = call.function.name
-                logger.info(f"Processing tool call: {fname}")
+                # logger.info(f"Processing tool call: {fname}")
 
                 # Parse arguments properly
                 try:
@@ -227,7 +227,7 @@ class OpenAIAdapter:
                     fargs = {}
 
                 # Run the tool via MCP
-                logger.info(f"Calling tool {fname} with args: {fargs}")
+                # logger.info(f"Calling tool {fname} with args: {fargs}")
                 result = await mcp_session.call_tool(fname, fargs)
 
                 # Extract raw text from TextContent list
@@ -267,12 +267,14 @@ class OpenAIAdapter:
         # Get follow-up from the model to synthesize results if tools were used
         final_response = first_text
         if tool_calls:
-            logger.info("Getting final response after tool calls")
+            # logger.info("Augmented messages after tool calls:", augmented_messages)
+            # logger.info("Getting final response after tool calls")
             follow_response = await self.client.chat.completions.create(
                 model=self.model_name,
                 messages=augmented_messages
             )
             final_response = follow_response.choices[0].message.content or ""
+            # logger.info(f"Final response after tool calls: {final_response}")
 
             interaction_history.append({
                 "role": "assistant_final",

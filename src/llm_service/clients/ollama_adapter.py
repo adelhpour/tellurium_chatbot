@@ -84,7 +84,7 @@ class OllamaAdapter:
         # Store in memory
         self.memories.append((user_msg, assistant_response))
 
-        logger.debug(f"Stored interaction in memory (total: {len(self.memories)})")
+        # logger.debug(f"Stored interaction in memory (total: {len(self.memories)})")
 
     def _retrieve_relevant_memories(self, query: str) -> List[Dict[str, str]]:
         """
@@ -110,7 +110,7 @@ class OllamaAdapter:
             messages.append({"role": "user", "content": user_msg})
             messages.append({"role": "assistant", "content": assistant_msg})
 
-        logger.info(f"Retrieved {len(messages) // 2} relevant past interactions")
+        # logger.info(f"Retrieved {len(messages) // 2} relevant past interactions")
         return messages
 
     async def process_query(self, messages: List[Dict[str, str]], tools: List[Any], mcp_session) -> List[
@@ -130,7 +130,7 @@ class OllamaAdapter:
         # Augment the messages with retrieved context
         # We'll inject the retrieved messages at the beginning, preserving the recent conversation flow
         augmented_messages = retrieved_messages + messages
-        logger.info(f"Augmented messages with {len(retrieved_messages)} retrieved messages")
+        # logger.info(f"Augmented messages with {len(retrieved_messages)} retrieved messages")
 
         # Format tools for Ollama
         ollama_tools = [{
@@ -140,7 +140,7 @@ class OllamaAdapter:
         } for t in tools]
 
         # First chat invocation with augmented context
-        logger.info(f"Sending augmented query to Ollama model: {self.model_name}")
+        # logger.info(f"Sending augmented query to Ollama model: {self.model_name}")
         ollama_resp = await loop.run_in_executor(
             None,
             lambda: self.chat(
@@ -168,7 +168,7 @@ class OllamaAdapter:
         for call in tool_calls:
             try:
                 fname = call.function.name
-                logger.info(f"Processing tool call: {fname}")
+                # logger.info(f"Processing tool call: {fname}")
 
                 # Parse arguments properly
                 try:
@@ -181,7 +181,7 @@ class OllamaAdapter:
                     fargs = {}
 
                 # Run the tool via MCP
-                logger.info(f"Calling tool {fname} with args: {fargs}")
+                # logger.info(f"Calling tool {fname} with args: {fargs}")
                 result = await mcp_session.call_tool(fname, fargs)
 
                 # Extract raw text from TextContent list
@@ -219,7 +219,7 @@ class OllamaAdapter:
         # Get follow-up from the model to synthesize results if tools were used
         final_response = first_text
         if tool_calls:
-            logger.info("Getting final response after tool calls")
+            # logger.info("Getting final response after tool calls")
             ollama_resp = await loop.run_in_executor(
                 None,
                 lambda: self.chat(
